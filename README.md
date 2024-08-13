@@ -115,7 +115,7 @@ Create a .env file in the root directory and add the following:
 
 To run the test suite:
 
-    ```bash
+   ```bash
    npm test
    ```
 
