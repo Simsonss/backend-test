@@ -111,8 +111,10 @@ Create a .env file in the root directory and add the following:
    npm start
    ```
 
-### Installation
+### Running Tests
+
 To run the test suite:
+
     ```bash
    npm test
    ```
