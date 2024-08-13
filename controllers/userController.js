@@ -1,51 +1,64 @@
-const User = require('../models/User');
+const mongoose = require('mongoose');
+const User = require('../models/User'); // Adjust the path as needed
 
 const followUser = async (req, res) => {
-    const user = await User.findById(req.user._id);
-    const userToFollow = await User.findById(req.params.user_id);
+    const userId = req.user._id;
+    const userToFollowId = req.params.user_id;
 
-    //handle follow yourself
-    if (user._id.toString() === userToFollow._id.toString()) {
-        return res.status(400).json({ message: 'You cannot follow yourself' });
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(userToFollowId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    if (!user || !userToFollow) {
-        return res.status(404).json({ message: 'User not found' });
+    try {
+        const user = await User.findById(userId);
+        const userToFollow = await User.findById(userToFollowId);
+
+        if (!user || !userToFollow) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.following.push(userToFollow._id);
+        userToFollow.followers.push(user._id);
+
+        await user.save();
+        await userToFollow.save();
+
+        res.json({ message: 'User followed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
-
-    if (user.following.includes(userToFollow._id)) {
-        return res.status(400).json({ message: 'Already following' });
-    }
-
-
-    user.following.push(userToFollow._id);
-    userToFollow.followers.push(user._id);
-
-    await user.save();
-    await userToFollow.save();
-
-    res.json({ message: 'User followed' });
 };
 
 const unfollowUser = async (req, res) => {
-    const user = await User.findById(req.user._id);
-    const userToUnfollow = await User.findById(req.params.user_id);
+    const userId = req.user._id;
+    const userToUnfollowId = req.params.user_id;
 
-    if (!user || !userToUnfollow) {
-        return res.status(404).json({ message: 'User not found' });
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(userToUnfollowId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    user.following = user.following.filter(
-        (followingId) => followingId.toString() !== userToUnfollow._id.toString()
-    );
-    userToUnfollow.followers = userToUnfollow.followers.filter(
-        (followerId) => followerId.toString() !== user._id.toString()
-    );
+    try {
+        const user = await User.findById(userId);
+        const userToUnfollow = await User.findById(userToUnfollowId);
 
-    await user.save();
-    await userToUnfollow.save();
+        if (!user || !userToUnfollow) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-    res.json({ message: 'User unfollowed' });
+        user.following = user.following.filter(
+            (followingId) => followingId.toString() !== userToUnfollow._id.toString()
+        );
+        userToUnfollow.followers = userToUnfollow.followers.filter(
+            (followerId) => followerId.toString() !== user._id.toString()
+        );
+
+        await user.save();
+        await userToUnfollow.save();
+
+        res.json({ message: 'User unfollowed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
 };
 
 module.exports = { followUser, unfollowUser };
