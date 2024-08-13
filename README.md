@@ -1,36 +1,120 @@
 # Backend test project
 
-## Requirements
+**Backend test project** is a simple Twitter clone API that allows users to register, log in, tweet, follow/unfollow other users, and view their personalized feed.
 
-Write the twitter clone API.
+## Features
 
-- User can register with username and password.
-- API will require JWT token to authorize.
-- User can tweet a message which no longer than 200 characters.
-- User can follow other user and the message from other user will be included in the user’s feed with the latest time ordered.
+- **User Registration and Authentication**
+  - Register with a unique username and password
+  - Log in to receive a JWT token for authenticated requests
+  - Log out functionality
 
-## Endpoints
+- **Tweeting**
+  - Post a tweet with a message up to 200 characters
+  - View tweets from followed users in a personalized feed
 
-| Endpoint            | Description                               |
-| ------------------- | ----------------------------------------- |
-| **User**            |                                           |
-| /register           | Register the new user                     |
-| /login              | Login                                     |
-| /logout             | Logout                                    |
-| /follow/[user_id]   | Follow other user                         |
-| /unfollow/[user_id] | Unfollow a user                           |
-| **Feed**            |                                           |
-| /feed               | Get the message feed for the current user |
-| /tweet              | Create new tweet                          |
+- **User Interaction**
+  - Follow and unfollow other users
+  - View tweets in the feed ordered by the latest time
 
-## Instruction
+## API Endpoints
 
-Fork this repository, do the work, push the code and alert hr@smilefokus.com when you done. The instruction to run the code is required.
+### User Endpoints
 
-Testing is optional but the team will be very happy if you have it :)
+- **POST /register**
+  - Register a new user
+  - Request Body:
+    ```json
+    {
+      "username": "string",
+      "password": "string"
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "token": "string"
+    }
+    ```
 
-Use NodeJS and MongoDB with any framework or just plain javascript or typescript OR! if you have strong opinion on the infrastructure choice do not hesitate to present to us.
+- **POST /login**
+  - Log in an existing user
+  - Request Body:
+    ```json
+    {
+      "username": "string",
+      "password": "string"
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "token": "string"
+    }
+    ```
 
-Any question plese contact hr@smilefokus.com
+- **POST /logout**
+  - Log out the current user
 
-Happy Coding :)
+- **POST /follow/:user_id**
+  - Follow another user
+  - Requires JWT authentication
+
+- **DELETE /unfollow/:user_id**
+  - Unfollow a user
+  - Requires JWT authentication
+
+### Feed Endpoints
+
+- **GET /feed**
+  - Get the feed of tweets from followed users
+  - Requires JWT authentication
+
+- **POST /tweet**
+  - Create a new tweet
+  - Request Body:
+    ```json
+    {
+      "content": "string"
+    }
+    ```
+  - Requires JWT authentication
+
+## Setup and Installation
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- MongoDB
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Simsonss/backend-test.git
+   cd backend-test
+   ```
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
+3. Set up environment variables:
+Create a .env file in the root directory and add the following:
+    ```env
+    PORT=3000
+    MONGO_URI=your_mongo_url
+    JWT_SECRET=your_jwt_secre
+    ```
+4. Start the server:
+   ```bash
+   npm start
+   ```
+
+### Installation
+To run the test suite:
+    ```bash
+   npm test
+   ```
+
+
